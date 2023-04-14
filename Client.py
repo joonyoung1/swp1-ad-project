@@ -19,6 +19,7 @@ def sorting_by_priority(x):
 
 
 def receive(client_socket):
+    global changes
     while Game_in_progress:
         data = client_socket.recv(BUFSIZ)
         data = pickle.loads(data)
@@ -28,10 +29,9 @@ def receive(client_socket):
             if data[0][0] == "end" or data[0][0] == "quit":
                 end_game(data[0])
                 break
-            draw_screen(width, height, square_size, screen)
-            for change in data:
-                pygame.draw.rect(screen, change[1], [change[0][0]*30 + 1, change[0][1]*30 + 1, 29, 29])
-            pygame.display.update()
+            lock.acquire()
+            changes += data
+            lock.release()
 
 
 def draw_screen(width, height, square_size, screen):
@@ -68,8 +68,8 @@ def end_game(information):
 Game_in_progress = True
 Game_Result = None
 
-HOST = '10.42.0.70'
-PORT = 10000
+HOST = '172.30.1.49'
+PORT = 9999
 BUFSIZ = 1024
 
 pygame.init()
@@ -107,9 +107,12 @@ if usr_code == "1":
 else:
     usr_position = 915
 
+changes = []
+lock = threading.Lock()
 
 def main():
     global Game_in_progress
+    global changes
     screen.fill(BLACK)
     draw_screen(width, height, square_size, screen)
 
@@ -128,6 +131,14 @@ def main():
     pygame.display.flip()
 
     while Game_in_progress:
+        draw_screen(width, height, square_size, screen)
+        lock.acquire()
+        while changes:
+            change = changes.pop()
+            pygame.draw.rect(screen, change[1], [change[0][0]*30 + 1, change[0][1]*30 + 1, 29, 29])
+        lock.release()
+        pygame.display.update()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 client_socket.send("quit".encode('utf-8'))
