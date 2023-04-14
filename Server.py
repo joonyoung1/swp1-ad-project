@@ -11,7 +11,7 @@ class Snake:
     direction = [0, 0]
 
     def __init__(self, x, y, direction, color):
-        self.body = ([[x, y]])
+        self.body = [[x, y]]
         self.direction = direction
         self.color = color
 
@@ -61,7 +61,7 @@ def detect_collision():
     if p1_die and p2_die:
         if len(snake_P1.body) > len(snake_P2.body):
             result = [True, 2, "Red win"]
-        elif len(snake_P1.body) == len(snake_P1.body):
+        elif len(snake_P1.body) == len(snake_P2.body):
             result = [True, 2, "Draw"]
         else:
             result = [True, 2, "Blue win"]
@@ -127,8 +127,8 @@ def send_changes():
         client_socket[0].send(data)
 
 
-HOST = "192.168.35.98"
-PORT = 10000
+HOST = "172.30.1.49"
+PORT = 9999
 BUFSIZ = 1024
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
