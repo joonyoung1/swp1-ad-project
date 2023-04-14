@@ -1,1 +1,2 @@
-# swp1-ad-project
+# SWP1_AD
+Software Project I Adventure Design
